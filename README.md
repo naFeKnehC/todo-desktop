@@ -76,6 +76,7 @@ src/
 - 应用数据通过 `electron-store` 存在 Electron 的 `userData` 目录中
 - 在 Windows 下，通常位于 `C:\Users\你的用户名\AppData\Roaming\应用名\config.json`
 - 对这个项目，可优先到 `%APPDATA%` 下查找 `todo-desktop` 或 `Todo Desktop` 相关目录
+- 项目与数据结构说明见 `AGENT.md`
 - 如果开发环境提示 Electron 缺失，可执行：
 
 ```bash

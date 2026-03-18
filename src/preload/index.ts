@@ -8,6 +8,7 @@ type TaskRecord = {
   priority: 'high' | 'medium' | 'low'
   completed: boolean
   createdAt: string
+  updatedAt: string
 }
 
 type WindowSettings = {

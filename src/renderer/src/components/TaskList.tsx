@@ -3,6 +3,7 @@ import type { Task } from '../App'
 interface Props {
   tasks: Task[]
   onToggle: (id: string) => void
+  onEdit: (id: string) => void
   onDelete: (id: string) => void
 }
 
@@ -18,12 +19,28 @@ const priorityColor: Record<Task['priority'], string> = {
   low: '#3b82f6'
 }
 
-function TaskList({ tasks, onToggle, onDelete }: Props): JSX.Element {
+function getDueDateOrder(date: string): number {
+  if (!date) return Number.POSITIVE_INFINITY
+
+  const parsed = Date.parse(`${date}T00:00:00`)
+  return Number.isNaN(parsed) ? Number.POSITIVE_INFINITY : parsed
+}
+
+function getUpdatedAtOrder(value: string): number {
+  const parsed = Date.parse(value)
+  return Number.isNaN(parsed) ? 0 : parsed
+}
+
+function TaskList({ tasks, onToggle, onEdit, onDelete }: Props): JSX.Element {
   const sorted = [...tasks].sort((a, b) => {
-    if (a.completed !== b.completed) return a.completed ? 1 : -1
+    const dueDateDiff = getDueDateOrder(a.dueDate) - getDueDateOrder(b.dueDate)
+    if (dueDateDiff !== 0) return dueDateDiff
 
     const priorityOrder: Record<Task['priority'], number> = { high: 0, medium: 1, low: 2 }
-    return priorityOrder[a.priority] - priorityOrder[b.priority]
+    const priorityDiff = priorityOrder[a.priority] - priorityOrder[b.priority]
+    if (priorityDiff !== 0) return priorityDiff
+
+    return getUpdatedAtOrder(b.updatedAt) - getUpdatedAtOrder(a.updatedAt)
   })
 
   return (
@@ -43,12 +60,26 @@ function TaskList({ tasks, onToggle, onDelete }: Props): JSX.Element {
               >
                 {priorityLabel[task.priority]}
               </span>
-              {task.dueDate && <span className="task-due">{task.dueDate}</span>}
+              <div className="task-time-group">
+                {task.dueDate && (
+                  <span className="task-due">{`\u622a\u6b62\u65f6\u95f4\uff1a${task.dueDate}`}</span>
+                )}
+              </div>
             </div>
           </div>
-          <button className="task-delete" type="button" onClick={() => onDelete(task.id)}>
-            x
-          </button>
+          <div className="task-actions">
+            <button
+              className="task-edit"
+              type="button"
+              title={'\u7f16\u8f91'}
+              onClick={() => onEdit(task.id)}
+            >
+              {'\u7f16'}
+            </button>
+            <button className="task-delete" type="button" onClick={() => onDelete(task.id)}>
+              x
+            </button>
+          </div>
         </div>
       ))}
     </div>

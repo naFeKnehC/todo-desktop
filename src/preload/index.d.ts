@@ -24,6 +24,7 @@ interface Task {
   priority: 'high' | 'medium' | 'low'
   completed: boolean
   createdAt: string
+  updatedAt: string
 }
 
 declare global {

@@ -151,13 +151,18 @@ body {
   margin-top: 8px;
 }
 
+.task-form-actions {
+  display: flex;
+  gap: 6px;
+}
+
 .task-date,
 .task-priority {
   padding: 5px 8px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 6px;
   background: rgba(255, 255, 255, 0.06);
-  color: #ccc;
+  color: #e5e7eb;
   font-size: 12px;
   outline: none;
 }
@@ -168,6 +173,11 @@ body {
 
 .task-priority {
   width: 72px;
+}
+
+.task-priority option {
+  background: #1f2430;
+  color: #f3f4f6;
 }
 
 .task-add-btn {
@@ -182,6 +192,21 @@ body {
 
 .task-add-btn:hover {
   background: #4f46e5;
+}
+
+.task-cancel-btn {
+  padding: 5px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 6px;
+  background: transparent;
+  color: #c2c7d3;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.task-cancel-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
 }
 
 /* Task List */
@@ -257,7 +282,7 @@ body {
   display: flex;
   gap: 6px;
   margin-top: 3px;
-  align-items: center;
+  align-items: flex-start;
 }
 
 .task-priority-tag {
@@ -268,11 +293,26 @@ body {
   font-weight: 600;
 }
 
-.task-due {
-  font-size: 11px;
-  color: #888;
+.task-time-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
+.task-due {
+  font-size: 11px;
+  color: #c3cada;
+  font-weight: 600;
+}
+
+.task-actions {
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  flex-shrink: 0;
+}
+
+.task-edit,
 .task-delete {
   width: 24px;
   height: 24px;
@@ -282,12 +322,15 @@ body {
   font-size: 12px;
   cursor: pointer;
   border-radius: 4px;
-  opacity: 0;
-  flex-shrink: 0;
 }
 
-.task-item:hover .task-delete {
+.task-item:hover .task-actions {
   opacity: 1;
+}
+
+.task-edit:hover {
+  background: rgba(59, 130, 246, 0.2);
+  color: #60a5fa;
 }
 
 .task-delete:hover {
