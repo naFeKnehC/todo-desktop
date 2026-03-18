@@ -37,6 +37,11 @@ Verified:
 - `npm run build`
 - `npm run dev`
 
+Latest updates:
+- Settings panel can open the local storage folder directly
+- README includes local storage location notes
+- Windows portable packaging has been verified
+
 ## 3. Project Structure
 
 ```text
@@ -81,7 +86,7 @@ Renderer:
 - Custom title bar with drag area
 - Task form with title, date and priority
 - Task list with sorting, toggle and delete
-- Settings panel with always-on-top and opacity
+- Settings panel with always-on-top, opacity, and storage-folder shortcut
 
 ## 5. Distribution
 
@@ -118,3 +123,4 @@ Notes:
 - End users should install from packaged `.exe`, not from source code
 - `electron-store` data is stored per user on the target machine
 - If `Electron uninstall` appears, the Electron binary is incomplete and must be reinstalled
+- Current storage shortcut opens the folder that contains the persisted config file

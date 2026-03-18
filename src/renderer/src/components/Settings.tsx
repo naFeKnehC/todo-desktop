@@ -3,12 +3,17 @@ import { useState, useEffect, type ChangeEvent } from 'react'
 function Settings(): JSX.Element {
   const [alwaysOnTop, setAlwaysOnTop] = useState(true)
   const [opacity, setOpacity] = useState(1)
+  const [storagePath, setStoragePath] = useState('')
+  const [storageHint, setStorageHint] = useState('')
 
   useEffect(() => {
-    window.api.getSettings().then((s) => {
-      setAlwaysOnTop(s.alwaysOnTop)
-      setOpacity(s.opacity)
-    })
+    Promise.all([window.api.getSettings(), window.api.getStoragePath()]).then(
+      ([settings, path]) => {
+        setAlwaysOnTop(settings.alwaysOnTop)
+        setOpacity(settings.opacity)
+        setStoragePath(path)
+      }
+    )
   }, [])
 
   const handleTopToggle = async (): Promise<void> => {
@@ -21,6 +26,16 @@ function Settings(): JSX.Element {
     const nextValue = parseFloat(e.target.value)
     const appliedValue = await window.api.setOpacity(nextValue)
     setOpacity(appliedValue)
+  }
+
+  const handleOpenStorageFolder = async (): Promise<void> => {
+    const result = await window.api.openStorageFolder()
+    setStoragePath(result.path)
+    setStorageHint(
+      result.success
+        ? '\u5df2\u6253\u5f00\u5b58\u50a8\u6587\u4ef6\u5939'
+        : result.error || '\u6253\u5f00\u5b58\u50a8\u6587\u4ef6\u5939\u5931\u8d25'
+    )
   }
 
   return (
@@ -42,6 +57,16 @@ function Settings(): JSX.Element {
           onChange={handleOpacity}
         />
       </div>
+      <div className="settings-row settings-storage">
+        <label>{'\u672c\u5730\u5b58\u50a8'}</label>
+        <button className="toggle" type="button" onClick={handleOpenStorageFolder}>
+          {'\u6253\u5f00\u6587\u4ef6\u5939'}
+        </button>
+      </div>
+      <div className="settings-path" title={storagePath}>
+        {storagePath || '\u6b63\u5728\u8bfb\u53d6\u5b58\u50a8\u8def\u5f84...'}
+      </div>
+      {storageHint && <div className="settings-hint">{storageHint}</div>}
     </div>
   )
 }

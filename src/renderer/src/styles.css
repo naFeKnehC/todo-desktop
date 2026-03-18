@@ -84,6 +84,11 @@ body {
   font-size: 13px;
 }
 
+.settings-storage {
+  align-items: flex-start;
+  margin-top: 6px;
+}
+
 .settings-row input[type='range'] {
   width: 120px;
   accent-color: #6366f1;
@@ -103,6 +108,20 @@ body {
   background: #6366f1;
   border-color: #6366f1;
   color: #fff;
+}
+
+.settings-path {
+  margin-top: 6px;
+  font-size: 11px;
+  line-height: 1.4;
+  color: #8d94a8;
+  word-break: break-all;
+}
+
+.settings-hint {
+  margin-top: 6px;
+  font-size: 11px;
+  color: #b6bdd0;
 }
 
 /* Task Form */

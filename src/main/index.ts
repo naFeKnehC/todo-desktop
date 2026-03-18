@@ -1,5 +1,5 @@
 import { app, shell, BrowserWindow, ipcMain } from 'electron'
-import { join } from 'path'
+import { dirname, join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import Store from 'electron-store'
 
@@ -99,6 +99,19 @@ function registerIpcHandlers(): void {
   ipcMain.handle('store:getTasks', () => store.get('tasks'))
   ipcMain.handle('store:setTasks', (_, tasks: TaskRecord[]) => {
     store.set('tasks', tasks)
+  })
+  ipcMain.handle('store:getStoragePath', () => store.path)
+  ipcMain.handle('store:openStorageFolder', async () => {
+    const storagePath = store.path
+    const storageDir = dirname(storagePath)
+    const error = await shell.openPath(storageDir)
+
+    return {
+      path: storagePath,
+      directory: storageDir,
+      success: error === '',
+      error: error || null
+    }
   })
 }
 

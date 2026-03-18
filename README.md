@@ -1,17 +1,17 @@
 # Todo Desktop
 
-A small desktop todo app built with Electron, Vite, React, and TypeScript.
+一个基于 Electron、Vite、React 和 TypeScript 的桌面待办应用。
 
-## Features
+## 功能
 
-- Frameless transparent desktop window
-- Task creation with due date and priority
-- Task list with sort, toggle, and delete
-- Always-on-top toggle
-- Window opacity control
-- Local persistence with `electron-store`
+- 无边框透明桌面窗口
+- 支持任务标题、截止日期、优先级
+- 任务列表支持排序、完成切换、删除
+- 支持窗口置顶
+- 支持窗口透明度调节
+- 使用 `electron-store` 本地持久化数据
 
-## Stack
+## 技术栈
 
 - Electron
 - electron-vite
@@ -19,43 +19,43 @@ A small desktop todo app built with Electron, Vite, React, and TypeScript.
 - TypeScript
 - electron-store
 
-## Development
+## 本地开发
 
-Install dependencies:
+安装依赖：
 
 ```bash
 npm install
 ```
 
-Start development:
+启动开发环境：
 
 ```bash
 npm run dev
 ```
 
-Build production assets:
+构建生产文件：
 
 ```bash
 npm run build
 ```
 
-## Packaging
+## 打包分发
 
-Build Windows distributables:
+打包 Windows 安装产物：
 
 ```bash
 npm run dist
 ```
 
-Build only a portable Windows executable:
+仅打包 Windows 便携版：
 
 ```bash
 npm run dist:portable
 ```
 
-The packaged files are generated in `release/`.
+打包产物输出在 `release/` 目录。
 
-## Project Structure
+## 项目结构
 
 ```text
 src/
@@ -70,11 +70,13 @@ src/
       `- components/
 ```
 
-## Notes
+## 说明
 
-- End users should use the packaged `.exe`, not the source code
-- App data is stored per user by `electron-store`
-- If Electron is missing locally during development, run:
+- 给最终用户使用时，应直接分发打包后的 `.exe`，不要分发源码
+- 应用数据通过 `electron-store` 存在 Electron 的 `userData` 目录中
+- 在 Windows 下，通常位于 `C:\Users\你的用户名\AppData\Roaming\应用名\config.json`
+- 对这个项目，可优先到 `%APPDATA%` 下查找 `todo-desktop` 或 `Todo Desktop` 相关目录
+- 如果开发环境提示 Electron 缺失，可执行：
 
 ```bash
 node node_modules\electron\install.js

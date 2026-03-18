@@ -8,6 +8,13 @@ interface API {
   getSettings: () => Promise<{ alwaysOnTop: boolean; opacity: number }>
   getTasks: () => Promise<Task[]>
   setTasks: (tasks: Task[]) => Promise<void>
+  getStoragePath: () => Promise<string>
+  openStorageFolder: () => Promise<{
+    path: string
+    directory: string
+    success: boolean
+    error: string | null
+  }>
 }
 
 interface Task {

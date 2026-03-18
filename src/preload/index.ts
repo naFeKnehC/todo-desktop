@@ -15,6 +15,13 @@ type WindowSettings = {
   opacity: number
 }
 
+type OpenStorageFolderResult = {
+  path: string
+  directory: string
+  success: boolean
+  error: string | null
+}
+
 const api = {
   minimize: () => ipcRenderer.invoke('window:minimize'),
   close: () => ipcRenderer.invoke('window:close'),
@@ -22,7 +29,10 @@ const api = {
   setOpacity: (val: number) => ipcRenderer.invoke('window:setOpacity', val),
   getSettings: (): Promise<WindowSettings> => ipcRenderer.invoke('window:getSettings'),
   getTasks: (): Promise<TaskRecord[]> => ipcRenderer.invoke('store:getTasks'),
-  setTasks: (tasks: TaskRecord[]) => ipcRenderer.invoke('store:setTasks', tasks)
+  setTasks: (tasks: TaskRecord[]) => ipcRenderer.invoke('store:setTasks', tasks),
+  getStoragePath: (): Promise<string> => ipcRenderer.invoke('store:getStoragePath'),
+  openStorageFolder: (): Promise<OpenStorageFolderResult> =>
+    ipcRenderer.invoke('store:openStorageFolder')
 }
 
 if (process.contextIsolated) {
