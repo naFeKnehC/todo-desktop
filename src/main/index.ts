@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow, ipcMain } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, Menu, Tray, nativeImage } from 'electron'
 import { dirname, join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import Store from 'electron-store'
@@ -9,25 +9,106 @@ type TaskRecord = {
   dueDate: string
   priority: 'high' | 'medium' | 'low'
   completed: boolean
+  archived: boolean
   createdAt: string
   updatedAt: string
+  archivedAt: string | null
 }
 
 type StoreSchema = {
   tasks: TaskRecord[]
   alwaysOnTop: boolean
   opacity: number
+  closeAction: 'ask' | 'quit' | 'tray'
 }
 
 const store = new Store<StoreSchema>({
   defaults: {
     tasks: [],
-    alwaysOnTop: true,
-    opacity: 1
+    alwaysOnTop: false,
+    opacity: 1,
+    closeAction: 'ask'
   }
 })
 
 let mainWindow: BrowserWindow | null = null
+let tray: Tray | null = null
+
+function getAssetPath(fileName: string): string {
+  if (app.isPackaged) {
+    return join(process.resourcesPath, 'resources', fileName)
+  }
+
+  return join(__dirname, `../../resources/${fileName}`)
+}
+
+function getWindowIconPath(): string {
+  return getAssetPath('icon.png')
+}
+
+function getTrayIconPath(): string {
+  return getAssetPath(process.platform === 'win32' ? 'icon.ico' : 'icon.png')
+}
+
+function createTray(): void {
+  if (tray) {
+    return
+  }
+
+  tray = new Tray(nativeImage.createFromPath(getTrayIconPath()))
+  tray.setToolTip('Todo Desktop')
+  tray.setContextMenu(
+    Menu.buildFromTemplate([
+      {
+        label: '显示主窗口',
+        click: () => {
+          showMainWindow()
+        }
+      },
+      {
+        label: '退出',
+        click: () => {
+          quitApplication()
+        }
+      }
+    ])
+  )
+
+  tray.on('double-click', () => {
+    showMainWindow()
+  })
+
+  tray.on('click', () => {
+    showMainWindow()
+  })
+}
+
+function showMainWindow(): void {
+  if (!mainWindow) {
+    return
+  }
+
+  mainWindow.setSkipTaskbar(false)
+  if (mainWindow.isMinimized()) {
+    mainWindow.restore()
+  }
+  mainWindow.show()
+  mainWindow.focus()
+}
+
+function hideToTray(): void {
+  if (!mainWindow) {
+    return
+  }
+
+  createTray()
+  mainWindow.setSkipTaskbar(true)
+  mainWindow.hide()
+}
+
+function quitApplication(): void {
+  app.quit()
+}
 
 function clampOpacity(value: number): number {
   return Math.min(1, Math.max(0.3, value))
@@ -44,6 +125,7 @@ function createWindow(): void {
     transparent: true,
     alwaysOnTop: store.get('alwaysOnTop'),
     opacity: clampOpacity(store.get('opacity')),
+    icon: getWindowIconPath(),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false
@@ -75,8 +157,13 @@ function registerIpcHandlers(): void {
     mainWindow?.minimize()
   })
 
-  ipcMain.handle('window:close', () => {
-    mainWindow?.close()
+  ipcMain.handle('window:performCloseAction', (_, action: 'quit' | 'tray') => {
+    if (action === 'tray') {
+      hideToTray()
+      return
+    }
+
+    quitApplication()
   })
 
   ipcMain.handle('window:toggleTop', (_, value: boolean) => {
@@ -94,8 +181,14 @@ function registerIpcHandlers(): void {
 
   ipcMain.handle('window:getSettings', () => ({
     alwaysOnTop: store.get('alwaysOnTop'),
-    opacity: clampOpacity(store.get('opacity'))
+    opacity: clampOpacity(store.get('opacity')),
+    closeAction: store.get('closeAction')
   }))
+
+  ipcMain.handle('window:setCloseAction', (_, value: 'ask' | 'quit' | 'tray') => {
+    store.set('closeAction', value)
+    return value
+  })
 
   ipcMain.handle('store:getTasks', () => store.get('tasks'))
   ipcMain.handle('store:setTasks', (_, tasks: TaskRecord[]) => {
@@ -117,7 +210,8 @@ function registerIpcHandlers(): void {
 }
 
 app.whenReady().then(() => {
-  electronApp.setAppUserModelId('com.todo-desktop')
+  app.setName('Todo Desktop')
+  electronApp.setAppUserModelId('com.todo.desktop')
 
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)
@@ -128,6 +222,7 @@ app.whenReady().then(() => {
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
+    else showMainWindow()
   })
 })
 

@@ -2,10 +2,15 @@ import { ElectronAPI } from '@electron-toolkit/preload'
 
 interface API {
   minimize: () => Promise<void>
-  close: () => Promise<void>
+  performCloseAction: (action: 'quit' | 'tray') => Promise<void>
   toggleTop: (val: boolean) => Promise<boolean>
   setOpacity: (val: number) => Promise<number>
-  getSettings: () => Promise<{ alwaysOnTop: boolean; opacity: number }>
+  getSettings: () => Promise<{
+    alwaysOnTop: boolean
+    opacity: number
+    closeAction: 'ask' | 'quit' | 'tray'
+  }>
+  setCloseAction: (value: 'ask' | 'quit' | 'tray') => Promise<'ask' | 'quit' | 'tray'>
   getTasks: () => Promise<Task[]>
   setTasks: (tasks: Task[]) => Promise<void>
   getStoragePath: () => Promise<string>
@@ -23,8 +28,10 @@ interface Task {
   dueDate: string
   priority: 'high' | 'medium' | 'low'
   completed: boolean
+  archived: boolean
   createdAt: string
   updatedAt: string
+  archivedAt: string | null
 }
 
 declare global {

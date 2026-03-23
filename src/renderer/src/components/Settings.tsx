@@ -1,7 +1,20 @@
 import { useState, useEffect, type ChangeEvent } from 'react'
 
-function Settings(): JSX.Element {
-  const [alwaysOnTop, setAlwaysOnTop] = useState(true)
+type CloseAction = 'ask' | 'quit' | 'tray'
+
+interface Props {
+  alwaysOnTop: boolean
+  closeAction: CloseAction
+  onAlwaysOnTopChange: (value: boolean) => Promise<void>
+  onCloseActionChange: (value: CloseAction) => Promise<void>
+}
+
+function Settings({
+  alwaysOnTop,
+  closeAction,
+  onAlwaysOnTopChange,
+  onCloseActionChange
+}: Props): JSX.Element {
   const [opacity, setOpacity] = useState(1)
   const [storagePath, setStoragePath] = useState('')
   const [storageHint, setStorageHint] = useState('')
@@ -9,7 +22,6 @@ function Settings(): JSX.Element {
   useEffect(() => {
     Promise.all([window.api.getSettings(), window.api.getStoragePath()]).then(
       ([settings, path]) => {
-        setAlwaysOnTop(settings.alwaysOnTop)
         setOpacity(settings.opacity)
         setStoragePath(path)
       }
@@ -18,8 +30,7 @@ function Settings(): JSX.Element {
 
   const handleTopToggle = async (): Promise<void> => {
     const nextValue = !alwaysOnTop
-    await window.api.toggleTop(nextValue)
-    setAlwaysOnTop(nextValue)
+    await onAlwaysOnTopChange(nextValue)
   }
 
   const handleOpacity = async (e: ChangeEvent<HTMLInputElement>): Promise<void> => {
@@ -36,6 +47,10 @@ function Settings(): JSX.Element {
         ? '\u5df2\u6253\u5f00\u5b58\u50a8\u6587\u4ef6\u5939'
         : result.error || '\u6253\u5f00\u5b58\u50a8\u6587\u4ef6\u5939\u5931\u8d25'
     )
+  }
+
+  const handleCloseAction = async (e: ChangeEvent<HTMLSelectElement>): Promise<void> => {
+    await onCloseActionChange(e.target.value as CloseAction)
   }
 
   return (
@@ -56,6 +71,14 @@ function Settings(): JSX.Element {
           value={opacity}
           onChange={handleOpacity}
         />
+      </div>
+      <div className="settings-row">
+        <label>{'\u5173\u95ed\u6309\u94ae\u884c\u4e3a'}</label>
+        <select className="settings-select" value={closeAction} onChange={handleCloseAction}>
+          <option value="ask">{'\u6bcf\u6b21\u8be2\u95ee'}</option>
+          <option value="quit">{'\u76f4\u63a5\u5173\u95ed'}</option>
+          <option value="tray">{'\u6700\u5c0f\u5316\u5230\u6258\u76d8'}</option>
+        </select>
       </div>
       <div className="settings-row settings-storage">
         <label>{'\u672c\u5730\u5b58\u50a8'}</label>
