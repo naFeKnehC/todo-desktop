@@ -8,9 +8,10 @@
     "dev": "electron-vite dev",
     "build": "electron-vite build",
     "preview": "electron-vite preview",
-    "dist": "npm run build && electron-builder --win",
-    "dist:dir": "npm run build && electron-builder --win dir",
-    "dist:portable": "npm run build && electron-builder --win portable --config.win.signAndEditExecutable=false"
+    "dist": "npm run build && electron-builder --win --x64",
+    "dist:mac:arm64": "npm run build && electron-builder --mac dmg zip --arm64",
+    "dist:dir": "npm run build && electron-builder --win dir --x64",
+    "dist:portable": "npm run build && electron-builder --win portable --x64 --config.win.signAndEditExecutable=false"
   },
   "dependencies": {
     "electron-store": "^8.2.0"
@@ -68,6 +69,16 @@
       ],
       "artifactName": "${productName}-${version}-${arch}.${ext}"
     },
+    "mac": {
+      "category": "public.app-category.productivity",
+      "icon": "resources/icon.png",
+      "identity": null,
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "artifactName": "${productName}-${version}-${arch}.${ext}"
+    },
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
@@ -76,6 +87,10 @@
       "installerIcon": "resources/icon.ico",
       "uninstallerIcon": "resources/icon.ico",
       "installerHeaderIcon": "resources/icon.ico"
+    },
+    "dmg": {
+      "icon": null,
+      "artifactName": "${productName}-${version}-${arch}.${ext}"
     }
   }
 }

@@ -53,6 +53,12 @@ npm run dist
 npm run dist:portable
 ```
 
+打包 mac arm64 安装产物：
+
+```bash
+npm run dist:mac:arm64
+```
+
 打包产物输出在 `release/` 目录。
 
 ## 项目结构
@@ -73,6 +79,8 @@ src/
 ## 说明
 
 - 给最终用户使用时，应直接分发打包后的 `.exe`，不要分发源码
+- mac 当前仅保留 `arm64` 打包命令
+- mac 当前未配置代码签名，适合本地测试分发；如果后续需要正式签名，可再单独补签名配置
 - 应用数据通过 `electron-store` 存在 Electron 的 `userData` 目录中
 - 在 Windows 下，通常位于 `C:\Users\你的用户名\AppData\Roaming\应用名\config.json`
 - 对这个项目，可优先到 `%APPDATA%` 下查找 `todo-desktop` 或 `Todo Desktop` 相关目录
